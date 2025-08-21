@@ -1,0 +1,47 @@
+﻿@model CustomFieldDto
+@section page_header 
+{
+    <div class="btn-list">
+        <a href="/customfields/edit/0" class="btn btn-primary">
+            <i class="ri-add-circle-line me-1"></i> Yeni
+        </a>
+        <div class="btn-group m-0">
+            <button type="button" class="btn btn-secondary px-2 dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="ri-settings-3-line me-1"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <a href="javascript:;" class="dropdown-item" onclick="$grid('.ruleway-grid').download('excel')">
+                    <i class="ri-file-excel-2-line me-2"></i>
+                    Excel indir
+                </a>
+                <a href="javascript:;" class="dropdown-item" onclick="showUpload()">
+                    <i class="ri-export-line me-2"></i>
+                    Excel yükle
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="javascript:;" class="dropdown-item" onclick="$grid('.ruleway-grid').download('excel', true)">
+                    <i class="ri-file-excel-2-line me-2"></i>
+                    Örnek excel indir
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+<grid id="gridCustomField" class="table table-hover" url="/customfields/read">
+    <column for="Name"></column>
+    <column for="TableName"></column>
+    <column for="DisplayOrder"></column>
+    <column for="Status" template="$template.status"></column>
+    <column for="Id" orderable="false" template="$template.actions" title="İşlemler" style="width:8rem;"></column>
+
+    <filters column-count="4">
+        <field for="Name" type="TEXT" lg-size="2"></field>
+        <field for="Status" type="SELECT" lg-size="1" items="@(Html.GetEnumSelectList<Status>())"></field>
+    </filters>
+</grid>
+
+@section scripts 
+{
+    <script src="/assets/js/pages/customfield/index.js" asp-append-version="true"></script>
+}

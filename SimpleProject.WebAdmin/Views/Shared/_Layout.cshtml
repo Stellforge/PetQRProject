@@ -1,0 +1,241 @@
+﻿@{
+    var user = this.GetUser();
+    var strPathAndQuery = ViewContext.HttpContext.Request.Path + ViewContext.HttpContext.Request.QueryString;
+
+    var leftMenu = this.GetMenu();
+    var selectedMenu = LeftMenu.SetSelected(leftMenu, strPathAndQuery);
+}
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SimpleProject - @(ViewBag.Title)</title>
+    <link rel="icon" href="/assets/images/toggle-logo.png" type="image/x-icon" />
+    <link href="/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/assets/libs/simplebar/simplebar.min.css" rel="stylesheet" />
+    <link href="/assets/libs/remixicon/remixicon.css" rel="stylesheet" />
+    <link href="/assets/libs/toastify/toastify.min.css" rel="stylesheet" />
+    <link href="/assets/libs/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="/assets/libs/flatpickr/flatpickr.min.css" rel="stylesheet" />
+    @RenderSection("styles", required: false)
+    <link href="/assets/css/styles.css" rel="stylesheet" />
+    <link href="/assets/css/custom.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="page">
+        <header class="app-header sticky" id="header">
+            <div class="main-header-container container-fluid">
+                <div class="header-content-left">
+                    <div class="header-element">
+                        <div class="horizontal-logo">
+                            <a href="/" class="header-logo">
+                                <img src="/assets/images/desktop-logo.svg" alt="logo" class="desktop-logo" />
+                                <img src="/assets/images/desktop-logo.svg" alt="logo" class="desktop-dark" />
+                                <img src="/assets/images/desktop-logo.svg" alt="logo" class="desktop-white" />
+                                <img src="/assets/images/toggle-logo.png" alt="logo" class="toggle-logo" />
+                                <img src="/assets/images/toggle-logo.png" alt="logo" class="toggle-dark" />
+                                <img src="/assets/images/toggle-logo.png" alt="logo" class="toggle-white" />
+                            </a>
+                        </div>
+                    </div>
+                    <div class="header-element mx-lg-0 mx-2">
+                        <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" data-bs-toggle="sidebar" href="javascript:void(0);">
+                            <span>
+                            </span>
+                        </a>
+                    </div>
+                    @if (ViewBag.CustomTitle != null && ViewBag.CustomTitle)
+                    {
+                        @RenderSection("page_title", required: false)
+                    }
+                    else
+                    {
+                        <h1 class="page-title fw-medium fs-18 mb-0">
+                            @if (ViewBag.Title != null)
+                            {
+                                <text>@(ViewBag.Title)</text>
+                            }
+                            else if (selectedMenu != null)
+                            {
+                                <text>@(selectedMenu.Title)</text>
+                            }
+                        </h1>
+                    }
+                </div>
+                <div class="header-content-right">
+                    @RenderSection("page_header", required: false)
+                    <ul class="d-flex m-0 ps-2">
+                        <li class="header-element notifications-dropdown d-xl-block d-none dropdown">
+                            <a href="javascript:void(0);" class="header-link dropdown-toggle hide-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" id="messageDropdown" aria-expanded="false">
+                                <i class="header-link-icon ri-notification-line"></i>
+                                <span class="header-icon-pulse bg-primary2 rounded pulse pulse-secondary"></span>
+                            </a>
+                            <div class="main-header-dropdown dropdown-menu dropdown-menu-end" data-popper-placement="none">
+                                <div class="p-3">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <p class="mb-0 fs-15 fw-medium">Bildirimler</p><span class="badge bg-secondary text-fixed-white">5 Unread</span>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <ul class="list-unstyled mb-0 simplebar-scrollable-y" id="header-notification-scroll">
+                                    <li class="dropdown-item">
+                                        <div class="d-flex align-items-center">
+                                            <div class="pe-2 lh-1">
+                                                <span class="avatar avatar-md avatar-rounded bg-primary">
+                                                    <img src="/assets/images/user.png" alt="user1">
+                                                </span>
+                                            </div>
+                                            <div class="flex-grow-1 d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <p class="mb-0 fw-medium">
+                                                        <a href="chat.html">New Messages</a>
+                                                    </p>
+                                                    <div class="text-muted fw-normal fs-12 header-notification-text text-truncate">Jane Sam sent you a message.</div>
+                                                    <div class="fw-normal fs-10 text-muted op-8">Now</div>
+                                                </div>
+                                                <div>
+                                                    <a href="javascript:void(0);" class="min-w-fit-content dropdown-item-close1"> <i class="ri-close-line"></i> </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <div class="p-3 empty-header-item1 border-top">
+                                    <div class="d-grid">
+                                        <a href="javascript:void(0);" class="btn btn-primary btn-wave waves-effect waves-light">View All</a>
+                                    </div>
+                                </div>
+                                <div class="p-5 empty-item1 d-none">
+                                    <div class="text-center">
+                                        <span class="avatar avatar-xl avatar-rounded bg-secondary-transparent"> <i class="ri-notification-off-line fs-2"></i> </span>
+                                        <h6 class="fw-medium mt-3">No New Notifications</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="header-element dropdown">
+                            <a href="javascript:void(0);" class="header-link dropdown-toggle hide-toggle px-2" id="mainHeaderProfile" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <img src="/assets/images/user.png" alt="img" class="avatar avatar-sm">
+                                    </div>
+                                </div>
+                            </a>
+                            <ul class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end">
+                                <li>
+                                    <div class="dropdown-item text-center border-bottom">
+                                        <span> @(user?.Name + " " + user?.Surname) </span>
+                                        <span class="d-block fs-12 text-muted">@(user?.AdminRoleName)</span>
+                                    </div>
+                                </li>
+                                @* <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="javacript:;">
+                                        <i class="fe fe-user p-1 rounded-circle bg-primary-transparent me-2 fs-16"></i>Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="javacript:;">
+                                        <i class="fe fe-mail p-1 rounded-circle bg-primary-transparent me-2 fs-16"></i>Mail Inbox
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="javacript:;">
+                                        <i class="fe fe-database p-1 rounded-circle bg-primary-transparent klist me-2 fs-16"></i>File Manager<span class="badge bg-primary1 text-fixed-white ms-auto fs-9">2</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="javacript:;">
+                                        <i class="fe fe-settings p-1 rounded-circle bg-primary-transparent ings me-2 fs-16"></i>Settings
+                                    </a>
+                                </li>
+                                <li class="border-top bg-light">
+                                    <a class="dropdown-item d-flex align-items-center" href="javacript:;">
+                                        <i class="fe fe-help-circle p-1 rounded-circle bg-primary-transparent set me-2 fs-16"></i>Help
+                                    </a>
+                                </li> *@
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="/home/logout">
+                                        <i class="fe fe-lock p-1 rounded-circle bg-primary-transparent ut me-2 fs-16"></i> Çıkış
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+        <partial name="_Sidebar" model="@(leftMenu)" />
+        <div class="main-content app-content">
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+        </div>
+        <footer class="footer mt-auto py-3 bg-white text-center">
+            <div class="container">
+                <span class="text-muted">
+                    Copyright © <span id="year">@(DateTime.UtcNow.ToUserLocalDate(this).Year)</span>
+                    <a href="https://ruleway.com/" target="_blank" class="text-dark fw-medium">Ruleway Ecommerce</a>.
+                    Designed with <span class="ri-heart-fill text-danger heart-beat"></span>
+                    by <a href="https://omicron.com.tr/" target="_blank"> <span class="fw-medium text-primary">omicron</span> </a> All rights reserved
+                </span>
+            </div>
+        </footer>
+    </div>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="off-canvas" role="dialog">
+        <div class="offcanvas-header border-bottom d-block p-0">
+            <div class="d-flex align-items-center justify-content-between p-3">
+                <h5 class="offcanvas-title text-default" id="offcanvasRightLabel">Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="offcanvas-body">
+        </div>
+    </div>
+
+    <div id="loader" class="d-none">
+        <img src="/assets/images/loader.svg" alt="" />
+    </div>
+
+    <div class="scrollToTop d-none">
+        <span class="arrow">
+            <i class="ri-arrow-up-line fs-20"></i>
+        </span>
+    </div>
+    <div id="responsive-overlay"></div>
+
+    <script src="/assets/libs/jquery/jquery.min.js"></script>
+    <script src="/assets/libs/jquery-validation/jquery.validate.min.js"></script>
+    <script src="/assets/libs/jquery-validation/localization/messages_tr.min.js"></script>
+    <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/libs/popper.min.js"></script>
+    <script src="/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="/assets/libs/inputmask/jquery.inputmask.min.js"></script>
+    <script src="/assets/libs/autoNumeric.js"></script>
+    <script src="/assets/libs/loader/blockui.min.js"></script>
+    <script src="/assets/libs/toastify/toastify-js.js"></script>
+    <script src="/assets/libs/select2/js/select2.min.js"></script>
+    <script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
+    <script src="/assets/libs/select2/js/i18n/tr.js"></script>
+    <script src="/assets/libs/flatpickr/l10n/tr.min.js"></script>
+    <script src="/assets/js/defaultmenu.js"></script>
+    <script src="/assets/js/main.js" asp-append-version="true"></script>
+    @RenderSection("scriptlibs", required: false)
+    <script>
+        window.addEventListener('pageshow', function (evt) { if (evt.persisted) { setTimeout(function () {  window.location.reload(); }, 10); }}, false);
+        @Html.Raw("var $numberFormat = { decimal: '" + System.Globalization.CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator + "', group: '" + System.Globalization.CultureInfo.CurrentUICulture.NumberFormat.NumberGroupSeparator + "' };")
+    </script>
+    <script src="/assets/js/ruleway/main.js" asp-append-version="true"></script>
+    <script src="/assets/js/ruleway/main.js" asp-append-version="true"></script>
+    <script src="/assets/js/ruleway/grid.js" asp-append-version="true"></script>
+    <script src="/assets/js/ruleway/file.js" asp-append-version="true"></script>
+    <script src="/assets/js/ruleway/fileBrowser.js" asp-append-version="true"></script>
+    <script src="/assets/js/ruleway/htmleditor.js" asp-append-version="true"></script>
+    <script src="/assets/js/ruleway/template.js" asp-append-version="true"></script>
+    <script src="/assets/js/pages/common.js" asp-append-version="true"></script>
+    @RenderSection("scripts", required: false)
+</body>
+
+</html>

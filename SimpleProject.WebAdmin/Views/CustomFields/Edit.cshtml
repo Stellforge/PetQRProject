@@ -1,0 +1,151 @@
+﻿@model CustomFieldDto
+@{
+    ViewBag.Title = "Özel alan düzenleme";
+    ViewBag.CustomTitle = true;
+    var modal = ViewBag.Modal != null && ViewBag.Modal;
+    var tableNames = ViewBag.TableNames as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+@if (Model == null)
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-danger" role="alert">
+                @(this.GetErrorMessage())
+            </div>
+        </div>
+    </div>
+    return;
+}
+
+@if (!modal)
+{
+    @section page_header
+    {
+    <div class="btn-list">
+        <button type="button" class="btn btn-dark" onclick="history.back()">
+            <i class="ri-arrow-go-back-line me-1"></i> Geri
+        </button>
+        <button type="button" class="btn btn-primary tab-btn tab-1" onclick="saveCustomField()">
+            <i class="ri-save-line me-1"></i> Kaydet
+        </button>
+    </div>
+    }
+    @section page_title
+    {
+    <ul class="nav nav-pills nav-style-1" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" data-bs-toggle="tab" role="tab" href="#tab-1">
+                <i class="ri-file-line me-1 d-inline-block"></i>
+                Özel alan
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link @(Model.Id == 0 ? "disabled" : "")" data-bs-toggle="tab" role="tab" href="#tab-2">
+                <i class="ri-list-view me-1 d-inline-block"></i>
+                Seçenek
+            </a>
+        </li>
+    </ul>
+        }
+    
+}
+
+<div class="tab-content">
+    <div class="tab-pane border-0 p-0 active show" id="tab-1" role="tabpanel">
+        <div class="card custom-card  @(modal ? "shadow-none": "container px-0")">
+            @if (modal)
+            {
+                <div class="card-header">
+                    <div class="card-title">@(ViewBag.Title)</div>
+                </div>
+            }
+            <div class="card-body">
+                <form id="frmCustomField" action="/customfields/save" method="post" onsubmit="saveCustomField(); return false;">
+                    <div class="row mb-3">
+                        <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Name"></label>
+                        <div class="col-md-10 col-lg-8">
+                            <input type="text" class="form-control" asp-for="Name" />
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="FieldType"></label>
+                        <div class="col-md-10 col-lg-8">
+                            <dropdown asp-for="FieldType" asp-items="Html.GetEnumSelectList<FieldType>()"></dropdown>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="TableName"></label>
+                        <div class="col-md-10 col-lg-8">
+                            <dropdown asp-for="TableName" asp-items="tableNames"></dropdown>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Description"></label>
+                        <div class="col-md-10 col-lg-8">
+                            <textarea rows="3" class="form-control" asp-for="Description"></textarea>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Code"></label>
+                        <div class="col-md-10 col-lg-8">
+                            <input type="text" class="form-control" asp-for="Code" />
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="DisplayOrder"></label>
+                        <div class="col-md-10 col-lg-8">
+                            <input type="text" class="form-control integer" asp-for="DisplayOrder" />
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Status"></label>
+                        <div class="col-md-10 col-lg-8">
+                            <dropdown asp-for="Status" asp-items="Html.GetEnumSelectList<Status>()"></dropdown>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-md-2 offset-lg-1 col-form-label text-md-end"></label>
+                        <div class="col-md-10 col-lg-8">
+                            <checkbox asp-for="Required" inline="true"></checkbox>
+                        </div>
+                    </div>
+                    <input type="hidden" asp-for="Id" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @if (!modal)
+    {
+        <div class="tab-pane border-0 p-0" id="tab-2" role="tabpanel">
+            <grid id="gridCustomFieldOption" class="table table-hover" url="/customfieldoptions/read?customFieldId=@(Model.Id)" prevent-first-load="true">
+                <column field="Name" title="Ad"></column>
+                <column field="DisplayOrder" title="Sıra"></column>
+                <column for="Id" orderable="false" template="$template.actions" title="İşlemler" style="width:8rem;"></column>
+
+                <filters column-count="4">
+                    <field names="Name" type="TEXT" lg-size="2" label="Ad"></field>
+                    <field type="HTML" lg-size="2" class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" data-id="0" onclick="editRecord.call(this, 'gridCustomFieldOption')">
+                            <i class="ri-add-circle-line me-1"></i> Yeni
+                        </button>
+                    </field>
+                </filters>
+            </grid>
+        </div>
+    }
+</div>
+
+@if (modal)
+{
+    <script src="/assets/js/pages/customfield/edit.js" asp-append-version="true"></script>
+}
+else
+{
+    @section scripts
+    {
+        <script src="/assets/js/pages/customfield/edit.js" asp-append-version="true"></script>
+        <script src="/assets/js/pages/customfield/edit-tabs.js" asp-append-version="true"></script>
+    }
+}

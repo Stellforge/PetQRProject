@@ -1,0 +1,153 @@
+﻿@model List<MenuItem>
+@{
+    var insertedIndexes = new List<int>();
+}
+<aside class="app-sidebar sticky" id="sidebar">
+    <div class="main-sidebar-header">
+        <a href="/" class="header-logo">
+            <img src="/assets/images/desktop-logo.svg" alt="logo" class="desktop-logo" />
+            <img src="/assets/images/desktop-logo.svg" alt="logo" class="desktop-dark" />
+            <img src="/assets/images/desktop-logo.svg" alt="logo" class="desktop-white" />
+            <img src="/assets/images/toggle-logo.png" alt="logo" class="toggle-logo" />
+            <img src="/assets/images/toggle-logo.png" alt="logo" class="toggle-dark" />
+            <img src="/assets/images/toggle-logo.png" alt="logo" class="toggle-white" />
+        </a>
+    </div>
+    <div class="main-sidebar" id="sidebar-scroll">
+        <nav class="main-menu-container nav nav-pills flex-column sub-open open active">
+            <div class="slide-left active d-none" id="slide-left">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
+                </svg>
+            </div>
+            <ul class="main-menu">
+                @for (var i = 0; i < Model.Count; i++)
+                {
+                    var item = Model[i];
+                    if (item.Level > 0)
+                    {
+                        continue;
+                    }
+                    insertedIndexes.Add(i);
+                    if (item.IsHeader)
+                    {
+                        <li class="slide__category">
+                            <span class="category-name">@(item.Title)</span>
+                        </li>
+                    }
+                    else
+                    {
+                        var activeCss = item.Selected ? "active" : "";
+                        var subMenuCss = i + 1 < Model.Count && Model[i + 1].Level > item.Level ? "has-sub" : "";
+                        var openCss = !string.IsNullOrEmpty(activeCss) && !string.IsNullOrEmpty(subMenuCss) ? "open" : "";
+                        <li class="slide @(subMenuCss) @(activeCss) @(openCss)">
+                            <a href="@(item.Url)" class="side-menu__item @(activeCss)">
+                                @if (!string.IsNullOrEmpty(subMenuCss))
+                                {
+                                    <i class="ri-arrow-down-s-line side-menu__angle"></i>
+                                }
+                                @if (!string.IsNullOrEmpty(item.Icon))
+                                {
+                                    <i class="@(item.Icon) w-6 h-6 side-menu__icon"></i>
+                                }
+                                <span class="side-menu__label">@(item.Title)</span>
+                            </a>
+                            @if (!string.IsNullOrEmpty(subMenuCss))
+                            {
+                                <ul class="slide-menu child1" data-popper-placement="bottom">
+                                    <li class="slide side-menu__label1">
+                                        <a href="javascript:void(0)">@(item.Title)</a>
+                                    </li>
+                                    @for (var j = i + 1; j < Model.Count; j++)
+                                    {
+                                        var item1 = Model[j];
+                                        if (item1.Level <= item.Level)
+                                        {
+                                            break;
+                                        }
+                                        if (insertedIndexes.Contains(j))
+                                        {
+                                            continue;
+                                        }
+                                        insertedIndexes.Add(j);
+                                        activeCss = item1.Selected ? "active" : "";
+                                        subMenuCss = j + 1 < Model.Count && Model[j + 1].Level > item1.Level ? "has-sub" : "";
+                                        openCss = !string.IsNullOrEmpty(activeCss) && !string.IsNullOrEmpty(subMenuCss) ? "open" : "";
+                                        <li class="slide @(subMenuCss) @(activeCss) @(openCss)">
+                                            <a href="@(item1.Url)" class="side-menu__item @(activeCss)">
+                                                @(item1.Title)
+                                                @if (!string.IsNullOrEmpty(subMenuCss))
+                                                {
+                                                    <i class="ri-arrow-down-s-line side-menu__angle"></i>
+                                                }
+                                            </a>
+                                            @if (!string.IsNullOrEmpty(subMenuCss))
+                                            {
+                                                <ul class="slide-menu child2">
+                                                    @for (var k = j + 1; k < Model.Count; k++)
+                                                    {
+                                                        var item2 = Model[k];
+                                                        if (item2.Level <= item1.Level)
+                                                        {
+                                                            break;
+                                                        }
+                                                        if (insertedIndexes.Contains(k))
+                                                        {
+                                                            continue;
+                                                        }
+                                                        insertedIndexes.Add(k);
+                                                        activeCss = item2.Selected ? "active" : "";
+                                                        subMenuCss = k + 1 < Model.Count && Model[k + 1].Level > item2.Level ? "has-sub" : "";
+                                                        openCss = !string.IsNullOrEmpty(activeCss) && !string.IsNullOrEmpty(subMenuCss) ? "open" : "";
+                                                        <li class="slide @(subMenuCss) @(activeCss) @(openCss)">
+                                                            <a href="@(item2.Url)" class="side-menu__item @(activeCss)">
+                                                                @(item2.Title)
+                                                                @if (!string.IsNullOrEmpty(subMenuCss))
+                                                                {
+                                                                    <i class="ri-arrow-down-s-line side-menu__angle"></i>
+                                                                }
+                                                            </a>
+                                                            @if (!string.IsNullOrEmpty(subMenuCss))
+                                                            {
+                                                                <ul class="slide-menu child3">
+                                                                    @for (var l = k + 1; l < Model.Count; l++)
+                                                                    {
+                                                                        var item3 = Model[l];
+                                                                        if (item3.Level <= item2.Level)
+                                                                        {
+                                                                            break;
+                                                                        }
+                                                                        if (insertedIndexes.Contains(l))
+                                                                        {
+                                                                            continue;
+                                                                        }
+                                                                        insertedIndexes.Add(l);
+                                                                        activeCss = item3.Selected ? "active" : "";
+                                                                        <li class="slide @(activeCss)">
+                                                                            <a href="@(item3.Url)" class="side-menu__item @(activeCss)">
+                                                                                @(item3.Title)
+                                                                            </a>
+                                                                        </li>
+                                                                    }
+                                                                </ul>
+                                                            }
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </li>
+                    }
+                }
+            </ul>
+            <div class="slide-right d-none" id="slide-right">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path>
+                </svg>
+            </div>
+        </nav>
+    </div>
+</aside>

@@ -1,0 +1,138 @@
+﻿@model AdminUserDto
+@{
+    ViewBag.Title = "Kullanıcı düzenleme";
+    ViewBag.Detail = true;
+    var modal = ViewBag.Modal != null && ViewBag.Modal;
+}
+@if (Model == null)
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-danger" role="alert">
+                @(this.GetErrorMessage())
+            </div>
+        </div>
+    </div>
+    return;
+}
+
+@if (!modal)
+{
+    @section page_header 
+    {
+    <div class="btn-list">
+        <button type="button" class="btn btn-dark" onclick="history.back()">
+            <i class="ri-arrow-go-back-line me-1"></i> Geri
+        </button>
+        <button type="button" class="btn btn-primary" onclick="saveAdminUser()">
+            <i class="ri-save-line me-1"></i> Kaydet
+        </button>
+    </div>
+    }
+}
+
+<div class="card custom-card @(modal ? "shadow-none": "container")">
+    <div class="card-body">
+        <form id="frmAdminUser" action="/adminusers/save" method="post" onsubmit="saveAdminUser(); return false;">
+            <div class="row mb-3">
+                <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="AdminRoleId"></label>
+                <div class="col-md-10 col-lg-8">
+                    <dropdown asp-for="AdminRoleId" url="/adminroles/read?format=select">
+                        @if (!string.IsNullOrEmpty(Model.AdminRoleName))
+                        {
+                            <option value="@(Model.AdminRoleId)" selected="selected">@(Model.AdminRoleName)</option>
+                        }
+                        else
+                        {
+                            <option value="">--Seçiniz--</option>
+                        }
+                    </dropdown>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="UserName"></label>
+                <div class="col-md-10 col-lg-8">
+                    <input type="text" class="form-control" asp-for="UserName" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Name"></label>
+                <div class="col-md-10 col-lg-8">
+                    <input type="text" class="form-control" asp-for="Name" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Surname"></label>
+                <div class="col-md-10 col-lg-8">
+                    <input type="text" class="form-control" asp-for="Surname" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Email"></label>
+                <div class="col-md-10 col-lg-8">
+                    <input type="email" class="form-control" asp-for="Email" />
+                </div>
+            </div>
+            @if (Model.Id > 0)
+            {
+                <div class="row mb-3">
+                    <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Password" for="pwdInput"></label>
+                    <div class="col-md-10 col-lg-8">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="position-relative">
+                                    <input type="password" class="form-control" disabled="disabled" id="pwdInput" onchange="adminUserUpdatePassword()" data-rule-required="true" />
+                                    <a href="javascript:void(0);" class="show-password-button text-muted" onclick="adminUserShowPassword(this)">
+                                        <i class="ri-eye-off-line align-middle"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <checkbox label="Şifre değiştir" onchange="adminUserChangePassword(this)" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row mb-3">
+                    <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Password"></label>
+                    <div class="col-md-10 col-lg-8">
+                        <div class="position-relative">
+                            <input type="password" class="form-control" asp-for="Password" />
+                            <a href="javascript:void(0);" class="show-password-button text-muted" onclick="adminUserShowPassword(this)">
+                                <i class="ri-eye-off-line align-middle"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+           
+            <div class="row mb-3">
+                <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Status"></label>
+                <div class="col-md-10 col-lg-8">
+                    <dropdown asp-for="Status" asp-items="Html.GetEnumSelectList<Status>()"></dropdown>
+                </div>
+            </div>
+            <input type="hidden" asp-for="Id" />
+            @if (Model.Id > 0)
+            {
+                <input type="hidden" asp-for="Password" />
+                <input type="hidden" id="oldPassword" value="@(Model.Password)" />
+            }
+        </form>
+    </div>
+</div>
+
+@if (modal)
+{
+    <script src="/assets/js/pages/adminuser/edit.js" asp-append-version="true"></script>
+}
+else
+{
+    @section scripts 
+    {
+        <script src="/assets/js/pages/adminuser/edit.js" asp-append-version="true"></script>
+    }
+}

@@ -1,0 +1,89 @@
+﻿@model BrandDto
+@{
+    ViewBag.Title = "Marka düzenleme";
+    ViewBag.Detail = true;
+    var modal = ViewBag.Modal != null && ViewBag.Modal;
+}
+@if (Model == null)
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-danger" role="alert">
+                @(this.GetErrorMessage())
+            </div>
+        </div>
+    </div>
+    return;
+}
+
+@if (!modal)
+{
+    @section page_header
+    {
+    <div class="btn-list">
+        <button type="button" class="btn btn-dark" onclick="history.back()">
+            <i class="ri-arrow-go-back-line me-1"></i> Geri
+        </button>
+        <button type="button" class="btn btn-primary" onclick="saveBrand()">
+            <i class="ri-save-line me-1"></i> Kaydet
+        </button>
+    </div>
+    }
+}
+
+<div class="card custom-card @(modal ? "shadow-none": "container")">
+    @if (modal)
+    {
+        <div class="card-header">
+            <div class="card-title">@(ViewBag.Title)</div>
+        </div>
+    }
+    <div class="card-body">
+        <form id="frmBrand" action="/brands/save" method="post" onsubmit="saveBrand(); return false;">
+            <div class="row mb-3">
+                <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Name"></label>
+                <div class="col-md-10 col-lg-8">
+                    <input type="text" class="form-control" asp-for="Name" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Code"></label>
+                <div class="col-md-10 col-lg-8">
+                    <input type="text" class="form-control" asp-for="Code" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="DisplayOrder"></label>
+                <div class="col-md-10 col-lg-8">
+                    <input type="text" class="form-control integer" asp-for="DisplayOrder" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Status"></label>
+                <div class="col-md-10 col-lg-8">
+                    <dropdown asp-for="Status" asp-items="Html.GetEnumSelectList<Status>()"></dropdown>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-md-2 offset-lg-1 col-form-label text-md-end" asp-for="Image"></label>
+                <div class="col-md-10 col-lg-8">
+                    <file asp-for="Image" data-accept="image/*" />
+                    <input type="hidden" asp-for="Thumbnail" />
+                </div>
+            </div>
+            <input type="hidden" asp-for="Id" />
+        </form>
+    </div>
+</div>
+
+@if (modal)
+{
+    <script src="/assets/js/pages/brand/edit.js" asp-append-version="true"></script>
+}
+else
+{
+    @section scripts
+    {
+        <script src="/assets/js/pages/brand/edit.js" asp-append-version="true"></script>
+    }
+}

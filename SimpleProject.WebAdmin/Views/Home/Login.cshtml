@@ -1,0 +1,109 @@
+﻿@model LoginRequest
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-nav-layout="vertical" data-vertical-style="overlay" data-theme-mode="light" data-header-styles="light" data-menu-styles="light" data-toggled="close">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SimpleProject - Giriş</title>
+    <link rel="icon" href="/assets/images/toggle-logo.png" type="image/x-icon" />
+    <link href="/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/assets/libs/remixicon/remixicon.css" rel="stylesheet" />
+    <link href="/assets/css/styles.css" rel="stylesheet" />
+</head>
+<body class="authentication-background">
+    <div class="container">
+        <div class="row justify-content-center align-items-center authentication authentication-basic h-100">
+            <div class="col-xxl-5 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12">
+                <div class="card custom-card my-4">
+                    <div class="card-body p-5">
+                        <div class="mb-3 d-flex justify-content-center">
+                            <a href="index.html">
+                                <img src="/assets/images/desktop-logo.svg" alt="logo" class="desktop-logo">
+                                <img src="/assets/images/desktop-logo.svg" alt="logo" class="desktop-white">
+                            </a>
+                        </div>
+                        <p class="h5 mb-2 text-center">Giriş</p>
+                        <p class="mb-4 text-muted op-7 fw-normal text-center">Aşağıdaki formu doldurarak giriş yapabilirsiniz</p>
+                        @if (!ViewContext.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @(Html.Raw(this.GetErrorMessage()))
+                            </div>
+                        }
+                        <form id="login-form" class="login-form" method="post" action="/home/login" asp-antiforgery="true">
+                            <div class="row gy-3">
+                                <div class="col-xl-12">
+                                    <label asp-for="UserName" class="form-label text-default">
+                                        Kullanıcı adı
+                                        <sup class="fs-12 text-danger">*</sup>
+                                    </label>
+                                    <input type="text" class="form-control" asp-for="UserName" />
+                                </div>
+                                <div class="col-xl-12 mb-2">
+                                    <label asp-for="Password" class="form-label text-default d-block">
+                                        Şifre
+                                        <sup class="fs-12 text-danger">*</sup>
+                                        <a href="/" class="float-end fw-normal text-muted">Şifremi unuttum</a>
+                                    </label>
+                                    <div class="position-relative">
+                                        <input type="password" class="form-control" asp-for="Password" />
+                                        <a href="javascript:void(0);" class="show-password-button text-muted" onclick="showPassword(this)">
+                                            <i class="ri-eye-off-line align-middle"></i>
+                                        </a>
+                                    </div>
+                                    @* <div class="mt-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                                            <label class="form-check-label text-muted fw-normal" for="defaultCheck1"> Remember password ? </label>
+                                        </div>
+                                    </div> *@
+                                </div>
+                            </div>
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary">Giriş yap</button>
+                            </div>
+                            <input type="hidden" asp-for="ReturnUrl" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/assets/libs/jquery/jquery.min.js"></script>
+    <script src="/assets/libs/jquery-validation/jquery.validate.min.js"></script>
+    <script src="/assets/libs/jquery-validation/localization/messages_tr.min.js"></script>
+    <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/ruleway/main.js"></script>
+    <script src="/home/langjs" type="text/javascript"></script>
+    <script>
+        if(window.location.href.includes("localhost")){
+            $(function () {
+                $("#login-form").validate();
+                setTimeout(function () {
+                    $(":input[name='UserName']").val("admin");
+                    $(":input[name='Password']").val("hCWrkpcOULpd");
+                }, 50);
+                if (localStorage.getItem("darktheme")) {
+                    $("html").attr('data-theme-mode', 'dark');
+                }
+            });
+        }
+
+
+        function showPassword(btn){
+            if ($("#Password").prop("type") == "text"){
+                $("#Password").prop("type", "password");
+                $(btn).find("i").removeClass("ri-eye-line").addClass("ri-eye-off-line");
+            }
+            else{
+                $("#Password").prop("type", "text");
+                $(btn).find("i").removeClass("ri-eye-off-line").addClass("ri-eye-line");
+            }
+        }
+    </script>
+</body>
+</html>
