@@ -26,6 +26,12 @@ public class AppDbContext : DbContext
     public DbSet<FoundReport>? FoundReports { get; set; }
     public DbSet<ScanEvent>? ScanEvents { get; set; }
     public DbSet<Notification>? Notifications { get; set; }
+    public DbSet<Subject>? Subjects { get; set; }
+    public DbSet<Dealer>? Dealers { get; set; }
+    public DbSet<CodeBatch>? CodeBatches { get; set; }
+    public DbSet<CodeAssignment>? CodeAssignments { get; set; }
+    public DbSet<QrOwnership>? QrOwnerships { get; set; }
+    public DbSet<QrTransferTicket>? QrTransferTickets { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -185,6 +191,98 @@ public class AppDbContext : DbContext
              .WithMany(u => u.Notifications)
              .HasForeignKey(x => x.UserId)
              .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Subject>(e =>
+        {
+            e.ToTable("Subject", "dbo");
+            e.Property(x => x.Type).HasMaxLength(20).IsRequired();
+            e.Property(x => x.Name).HasMaxLength(120).IsRequired();
+            e.Property(x => x.Notes).HasMaxLength(1000);
+            e.Property(x => x.FotoUrl).HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<Dealer>(e =>
+        {
+            e.ToTable("Dealer", "dbo");
+            e.Property(x => x.Code).HasMaxLength(50).IsRequired();
+            e.Property(x => x.Name).HasMaxLength(150).IsRequired();
+            e.Property(x => x.Contact).HasMaxLength(150);
+        });
+
+        modelBuilder.Entity<CodeBatch>(e =>
+        {
+            e.ToTable("CodeBatch", "dbo");
+            e.Property(x => x.BatchCode).HasMaxLength(50).IsRequired();
+            e.Property(x => x.Quantity).IsRequired();
+            e.Property(x => x.CreatedAt).IsRequired();
+
+            e.HasOne(cb => cb.Dealer)
+             .WithMany(d => d.Batches)
+             .HasForeignKey(cb => cb.DealerId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<CodeAssignment>(e =>
+        {
+            e.ToTable("CodeAssignment", "dbo");
+            e.Property(x => x.AssignedAt).IsRequired();
+
+            e.HasOne(ca => ca.Batch)
+             .WithMany(cb => cb.Assignments)
+             .HasForeignKey(ca => ca.BatchId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(ca => ca.Collar)
+             .WithMany()
+             .HasForeignKey(ca => ca.CollarId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<QrOwnership>(e =>
+        {
+            e.ToTable("QrOwnership", "dbo");
+            e.Property(x => x.ActivatedAt).IsRequired();
+            e.Property(x => x.IsActive).IsRequired();
+
+            e.HasOne(qo => qo.Collar)
+             .WithMany()
+             .HasForeignKey(qo => qo.CollarId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(qo => qo.OwnerUser)
+             .WithMany()
+             .HasForeignKey(qo => qo.OwnerUserId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<QrTransferTicket>(e =>
+        {
+            e.ToTable("QrTransferTicket", "dbo");
+            e.Property(x => x.Status).HasMaxLength(20).IsRequired();
+            e.Property(x => x.Token).HasMaxLength(64).IsRequired();
+            e.Property(x => x.ExpiresAt).IsRequired();
+            e.Property(x => x.CreatedAt).IsRequired();
+
+            e.HasOne(tt => tt.Collar)
+             .WithMany()
+             .HasForeignKey(tt => tt.CollarId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(tt => tt.FromOwnerUser)
+             .WithMany()
+             .HasForeignKey(tt => tt.FromOwnerUserId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(tt => tt.FromDealer)
+             .WithMany()
+             .HasForeignKey(tt => tt.FromDealerId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(tt => tt.ToOwnerUser)
+             .WithMany()
+             .HasForeignKey(tt => tt.ToOwnerUserId)
+             .OnDelete(DeleteBehavior.Restrict);
         });
 
         BaseEntityDefaults(modelBuilder);
